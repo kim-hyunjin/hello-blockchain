@@ -25,19 +25,36 @@ class Blockchain:
 
     def proof_of_work(self, previous_proof):
         new_proof = 1
-        check_proof = False
-        while check_proof is False:
-            # 더 복잡한 계산식을 이용해 난이도를 높일 수 있음
-            hash_operation = hashlib.sha256(
-                str(new_proof**2 - previous_proof**2).encode()
-            ).hexdigest()
-            # leading zero의 개수가 많을수록 난이도가 높음
-            if hash_operation[:4] == "0000":
-                check_proof = True
-            else:
+        is_proof_valid = False
+        while is_proof_valid is False:
+            is_proof_valid = self.check_proof(previous_proof, new_proof)
+            if not is_proof_valid:
                 new_proof += 1
-
         return new_proof
+
+    def check_proof(self, previous_proof, proof):
+        # 더 복잡한 계산식을 이용해 난이도를 높일 수 있음
+        hash_operation = hashlib.sha256(
+            str(proof**2 - previous_proof**2).encode()
+        ).hexdigest()
+        # leading zero의 개수가 많을수록 난이도가 높음
+        return hash_operation[:4] == "0000"
+
+    def is_chain_valid(self, chain):
+        previous_block = chain[0]
+        block_index = 1
+        while block_index < len(chain):
+            block = chain[block_index]
+            if block["previous_hash"] != self.hash(previous_block):
+                return False
+
+            is_proof_valid = self.check_proof(previous_block["proof"], block["proof"])
+            if not is_proof_valid:
+                return False
+
+            previous_block = block
+            block_index += 1
+        return True
 
     def hash(self, block):
         encoded_block = json.dumps(block, sort_keys=True).encode()
