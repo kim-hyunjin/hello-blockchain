@@ -175,7 +175,7 @@ def connect_node():
 
 
 @app.route("/replace_chain", methods=["GET"])
-def is_valid():
+def replace_chain():
     is_replaced = blockchain.replace_chain()
     response = {"is_replaced": is_replaced, "chain": blockchain.chain}
     return jsonify(response), 200
