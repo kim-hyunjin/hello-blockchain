@@ -174,4 +174,11 @@ def connect_node():
     return jsonify(response), 201
 
 
+@app.route("/replace_chain", methods=["GET"])
+def is_valid():
+    is_replaced = blockchain.replace_chain()
+    response = {"is_replaced": is_replaced, "chain": blockchain.chain}
+    return jsonify(response), 200
+
+
 app.run(host="0.0.0.0", port=5001)
